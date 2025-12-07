@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 const UserSearch = () => {
   const [username, setUsername] = useState('');
   const [submittedUsername, setSubmittedUsername] = useState('');
+  const [recentUsers, setRecentUsers] = useState<string[]>([]);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['users', 'submittedUsername'],
@@ -15,7 +16,16 @@ const UserSearch = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmittedUsername(username.trim());
+    const trimmed = username.trim();
+
+    if (!trimmed) return;
+
+    setSubmittedUsername(trimmed);
+
+    setRecentUsers((prev) => {
+      const updated = [trimmed, ...prev.filter((u) => u !== trimmed)];
+      return updated.slice(0, 5);
+    });
   };
 
   return (
