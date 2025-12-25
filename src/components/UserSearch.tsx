@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { fetchGithunUser } from '../api/github';
+import { fetchGithubUser } from '../api/github';
 import UserCard from './UserCard';
 import { useQuery } from '@tanstack/react-query';
 import RecentSearches from './RecentSearches';
@@ -10,8 +10,8 @@ const UserSearch = () => {
   const [recentUsers, setRecentUsers] = useState<string[]>([]);
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['users', 'submittedUsername'],
-    queryFn: () => fetchGithunUser(submittedUsername),
+    queryKey: ['users', submittedUsername],
+    queryFn: () => fetchGithubUser(submittedUsername),
     enabled: !!submittedUsername,
   });
 
@@ -20,6 +20,7 @@ const UserSearch = () => {
     const trimmed = username.trim();
 
     if (!trimmed) return;
+    console.log(trimmed);
 
     setSubmittedUsername(trimmed);
 
@@ -40,8 +41,10 @@ const UserSearch = () => {
         />
         <button type="submit">Search</button>
       </form>
+
       {isLoading && <p className="status">Loading...</p>}
       {isError && <p className="status error">{error.message}</p>}
+
       {data && <UserCard user={data} />}
 
       {recentUsers.length > 0 && (
@@ -49,6 +52,7 @@ const UserSearch = () => {
           users={recentUsers}
           onSelect={(username) => {
             setUsername(username);
+            setSubmittedUsername(username);
           }}
         />
       )}

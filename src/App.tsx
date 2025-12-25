@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import UserSearch from './components/UserSearch';
 
 const App = () => {

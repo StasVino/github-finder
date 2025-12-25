@@ -1,4 +1,4 @@
-export const fetchGithunUser = async (username: string) => {
+export const fetchGithubUser = async (username: string) => {
   const res = await fetch(
     `${import.meta.env.VITE_GITHUB_API_URL}/users/${username}`
   );
