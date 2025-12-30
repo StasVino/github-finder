@@ -4,6 +4,7 @@ import UserCard from './UserCard';
 import { useQuery } from '@tanstack/react-query';
 import RecentSearches from './RecentSearches';
 import { useDebounce } from 'use-debounce';
+import SuggestionDropdown from './SuggestionDropdown';
 import type { GitHubUser } from '../types';
 
 const UserSearch = () => {
@@ -25,7 +26,7 @@ const UserSearch = () => {
   });
 
   // Query for suggestions for users in search
-  const { data: suggestion } = useQuery({
+  const { data: suggestions } = useQuery({
     queryKey: ['github-user-suggestions', debouncedUsername],
     queryFn: () => searchGithubUser(debouncedUsername),
     enabled: debouncedUsername.length > 1,
@@ -65,30 +66,28 @@ const UserSearch = () => {
               setShowSuggestions(val.trim().length > 1);
             }}
           />
-          {showSuggestions && suggestion?.length > 0 && (
-            <ul className="suggestions">
-              {suggestion.slice(0, 5).map((user: GitHubUser) => (
-                <li
-                  key={user.login}
-                  onClick={() => {
-                    setUsername(user.login);
-                    setShowSuggestions(false);
-                    if (submittedUsername !== user.login) {
-                      setSubmittedUsername(user.login);
-                    } else {
-                      refetch();
-                    }
-                  }}
-                >
-                  <img
-                    src={user.avatar_url}
-                    alt={user.login}
-                    className="avatar-xs"
-                  />
-                  {user.login}
-                </li>
-              ))}
-            </ul>
+          {showSuggestions && suggestions?.length > 0 && (
+            <SuggestionDropdown
+              suggestions={suggestions}
+              show={showSuggestions}
+              onSelect={(selected) => {
+                setUsername(selected);
+                setShowSuggestions(false);
+                if (submittedUsername !== selected) {
+                  setSubmittedUsername(selected);
+
+                  setRecentUsers((prev) => {
+                    const updated = [
+                      selected,
+                      ...prev.filter((u) => u !== selected),
+                    ];
+                    return updated.slice(0, 5);
+                  });
+                } else {
+                  refetch();
+                }
+              }}
+            />
           )}
         </div>
         <button type="submit">Search</button>
