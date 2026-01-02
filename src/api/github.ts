@@ -24,7 +24,7 @@ export const checkIfFollowingUser = async (username: string) => {
     `${import.meta.env.VITE_GITHUB_API_URL}/user/following/${username}`,
     {
       headers: {
-        Authorazation: `Bearer ${import.meta.env.VITE_GITHHUB_API_TOKEN}`,
+        Authorization: `Bearer ${import.meta.env.VITE_GITHHUB_API_TOKEN}`,
         Accept: 'application/vnd.github+json',
       },
     }
@@ -38,4 +38,50 @@ export const checkIfFollowingUser = async (username: string) => {
     const errorData = await res.json().catch(() => null);
     throw new Error(errorData.message || 'Failed to check follow status');
   }
+};
+
+// Follow user on github
+export const followGithubUser = async (username: string) => {
+  const res = await fetch(
+    `${import.meta.env.VITE_GITHUB_API_URL}/user/following/${username}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_GITHHUB_API_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'applaction/json',
+      },
+    }
+  );
+
+  if (!res.ok) {
+    {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'Failed to  follow user');
+    }
+  }
+  return true;
+};
+
+// Unfollow githhub user
+export const unFollowGithubUser = async (username: string) => {
+  const res = await fetch(
+    `${import.meta.env.VITE_GITHUB_API_URL}/user/following/${username}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_GITHHUB_API_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'applaction/json',
+      },
+    }
+  );
+
+  if (!res.ok) {
+    {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'Failed to  unfollow user');
+    }
+  }
+  return true;
 };
